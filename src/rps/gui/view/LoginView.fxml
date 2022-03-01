@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="rps.gui.controller.LoginViewController">
+   <children>
+      <TextField fx:id="txfName" layoutX="225.0" layoutY="180.0" />
+      <Button layoutX="273.0" layoutY="211.0" mnemonicParsing="false" onAction="#handleLogin" text="Login" />
+      <Label layoutX="225.0" layoutY="163.0" text="Name" />
+      <Label layoutX="93.0" layoutY="330.0" prefHeight="55.0" prefWidth="414.0" text="For the best exerience, choose the same name for the same player, so the AI can learn from your psat games, not only the current session" textAlignment="CENTER" wrapText="true" />
+   </children>
+</AnchorPane>

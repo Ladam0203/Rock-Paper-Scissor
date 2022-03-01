@@ -45,9 +45,6 @@ public class ConsoleApp {
                 System.out.println(getResultAsString(result));
             });
         }
-
-        if (ge.getGameState().getHistoricResults().size() > 0)
-            System.out.println("Game stats: ....ehmmmm..not implemented yet...please FIXME");
     }
 
 
