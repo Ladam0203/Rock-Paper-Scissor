@@ -83,14 +83,21 @@ public class GameViewController {
         btnExit.setDisable(true);
     }
 
+    public void handleTest()
+    {
+        for (int i = 0; i < 100; i++) {
+            Random rnd = new Random();
+            int moveInt = rnd.nextInt(0, 101);
+            Move move = moveInt > 64 ? Move.Rock : moveInt > 30 ? Move.Paper : Move.Scissor;
+
+            ge.playRound(move);
+        }
+        System.out.println(getGameStatString());
+    }
+
     public void displayCallback()
     {
         txaHistoricResults.setText(ge.getGameState().getHistoricResults()
-                .stream()
-                .map(result -> getResultAsString(result) + "\n")
-                .collect(Collectors.joining()));
-
-        System.out.println(ge.getGameState().getHistoricResults()
                 .stream()
                 .map(result -> getResultAsString(result) + "\n")
                 .collect(Collectors.joining()));

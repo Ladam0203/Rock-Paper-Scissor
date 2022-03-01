@@ -13,5 +13,6 @@
       <Button fx:id="btnRock" layoutX="194.0" layoutY="213.0" mnemonicParsing="false" onAction="#handleRock" text="Rock" AnchorPane.bottomAnchor="160.0" />
       <Button fx:id="btnScissor" layoutX="363.0" layoutY="213.0" mnemonicParsing="false" onAction="#handleScissor" text="Scissor" AnchorPane.bottomAnchor="160.0" />
       <Button fx:id="btnExit" layoutX="281.0" layoutY="360.0" mnemonicParsing="false" onAction="#handleExit" text="Exit" AnchorPane.bottomAnchor="50.0" />
+      <Button layoutX="15.0" layoutY="361.0" mnemonicParsing="false" onAction="#handleTest" text="Test 100" />
    </children>
 </AnchorPane>

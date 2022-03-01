@@ -53,17 +53,22 @@ public class Player implements IPlayer {
 
         int learnSize = 6;
         List<Result> recent = results.subList(Math.max(results.size() - learnSize, 0), results.size());
-        int repeatLast = 0;
-        int counterLast = 0;
-        int surrenderLast = 0;
+        double repeatLast = 0;
+        double counterLast = 0;
+        double surrenderLast = 0;
         for (int i = 1; i < recent.size(); i++) {
             if (recent.get(i-1).getWinnerMove() == recent.get(i).getWinnerMove())
+            {
                 repeatLast++;
+            }
             else if ((recent.get(i-1).getWinnerMove() == Move.Rock && recent.get(i).getWinnerMove() == Move.Scissor) ||
                     (recent.get(i-1).getWinnerMove() == Move.Scissor && recent.get(i).getWinnerMove() == Move.Paper) ||
-                    (recent.get(i-1).getWinnerMove() == Move.Paper && recent.get(i).getWinnerMove() == Move.Rock)) {
+                    (recent.get(i-1).getWinnerMove() == Move.Paper && recent.get(i).getWinnerMove() == Move.Rock))
+            {
                 counterLast++;
-            } else {
+            }
+            else
+            {
                 surrenderLast++;
             }
         }
