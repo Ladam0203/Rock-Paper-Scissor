@@ -111,4 +111,38 @@ public class Player implements IPlayer {
             return repeatLast > counterLast ? repeatMove : counterLast > surrenderLast ? counterMove : surrenderMove;
         }
     }
+
+    //HELPER CLASSES
+
+    public Move getBotMoveFromResult(Result result)
+    {
+        if (result.getType() == ResultType.Tie)
+        {
+            return result.getLoserMove();
+        }
+        else if (result.getWinnerPlayer() == this)
+        {
+            return result.getWinnerMove();
+        }
+        else
+        {
+            return result.getLoserMove();
+        }
+    }
+
+    public Move getHumanMoveFromResult(Result result)
+    {
+        if (result.getType() == ResultType.Tie)
+        {
+            return result.getWinnerMove();
+        }
+        else if (result.getWinnerPlayer() == this)
+        {
+            return result.getLoserMove();
+        }
+        else
+        {
+            return result.getWinnerMove();
+        }
+    }
 }
