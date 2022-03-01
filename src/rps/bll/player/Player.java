@@ -50,99 +50,97 @@ public class Player implements IPlayer {
     public Move doMove(IGameState state) {
         //Historic data to analyze and decide next move...
         ArrayList<Result> results = (ArrayList<Result>) state.getHistoricResults();
+        int depth = 6;
+        List<Result> recent = results.subList(Math.max(results.size() - depth, 0), results.size());
 
-        int learnSize = 6;
-        List<Result> recent = results.subList(Math.max(results.size() - learnSize, 0), results.size());
-        double repeatLast = 0;
-        double counterLast = 0;
-        double surrenderLast = 0;
-        for (int i = 1; i < recent.size(); i++) {
-            if (recent.get(i-1).getWinnerMove() == recent.get(i).getWinnerMove())
+        float guess = 0;
+        float repeatCenter = 1f/6f;
+        float counterCenter = 3f/6f;
+        float surrenderCenter = 5f/6f;
+
+        for (int i = 1; i < recent.size(); ++i) {
+            if (isRepeatOf(recent.get(i-1).getWinnerMove(), recent.get(i).getWinnerMove()))
             {
-                repeatLast++;
+                guess = (guess+repeatCenter)/2;
             }
-            else if ((recent.get(i-1).getWinnerMove() == Move.Rock && recent.get(i).getWinnerMove() == Move.Scissor) ||
-                    (recent.get(i-1).getWinnerMove() == Move.Scissor && recent.get(i).getWinnerMove() == Move.Paper) ||
-                    (recent.get(i-1).getWinnerMove() == Move.Paper && recent.get(i).getWinnerMove() == Move.Rock))
+            if (isCounterOf(recent.get(i-1).getWinnerMove(), recent.get(i).getWinnerMove()))
             {
-                counterLast++;
+                guess = (guess+counterCenter)/2;
+            }
+            if (isSurrenderOf(recent.get(i-1).getWinnerMove(), recent.get(i).getWinnerMove()))
+            {
+                guess = (guess+surrenderCenter)/2;
+            }
+        }
+
+        if (recent.size() >= 1)
+        {
+            Move lastWinnerMove = recent.get(recent.size()-1).getWinnerMove();
+            if (guess <= repeatCenter)
+            {
+                return lastWinnerMove;
+            }
+            else if (guess <= counterCenter)
+            {
+                if (lastWinnerMove == Move.Rock)
+                {
+                    return Move.Paper;
+                }
+                if (lastWinnerMove == Move.Paper)
+                {
+                    return Move.Scissor;
+                }
+                if (lastWinnerMove == Move.Scissor)
+                {
+                    return Move.Rock;
+                }
             }
             else
             {
-                surrenderLast++;
+                if (lastWinnerMove == Move.Rock)
+                {
+                    return Move.Scissor;
+                }
+                if (lastWinnerMove == Move.Paper)
+                {
+                    return Move.Rock;
+                }
+                if (lastWinnerMove == Move.Scissor)
+                {
+                    return Move.Paper;
+                }
             }
         }
-        System.out.println(repeatLast + " " + counterLast + " " + surrenderLast);
 
-        if (recent.size() < 1)
-        {
-            return Move.Scissor;
-        }
-        else
-        {
-            Move repeatMove = recent.get(recent.size()-1).getWinnerMove();
-            Move counterMove = Move.Rock;
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Rock)
-            {
-                counterMove = Move.Paper;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Paper)
-            {
-                counterMove = Move.Scissor;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Scissor)
-            {
-                counterMove = Move.Rock;
-            }
-            Move surrenderMove = Move.Rock;
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Rock)
-            {
-                surrenderMove = Move.Scissor;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Paper)
-            {
-                surrenderMove = Move.Rock;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Scissor)
-            {
-                surrenderMove = Move.Paper;
-            }
-
-            return repeatLast > counterLast ? repeatMove : counterLast > surrenderLast ? counterMove : surrenderMove;
-        }
+        return Move.Paper;
     }
 
     //HELPER CLASSES
 
-    public Move getBotMoveFromResult(Result result)
+    private boolean isRepeatOf(Move first, Move second)
     {
-        if (result.getType() == ResultType.Tie)
-        {
-            return result.getLoserMove();
-        }
-        else if (result.getWinnerPlayer() == this)
-        {
-            return result.getWinnerMove();
-        }
-        else
-        {
-            return result.getLoserMove();
-        }
+        return first == second;
     }
-
-    public Move getHumanMoveFromResult(Result result)
+    
+    private boolean isCounterOf(Move first, Move second)
     {
-        if (result.getType() == ResultType.Tie)
+        if ((first == Move.Rock && second == Move.Paper) ||
+            (first == Move.Scissor && second == Move.Rock) ||
+            (first == Move.Paper && second == Move.Scissor))
         {
-            return result.getWinnerMove();
+            return true;
         }
-        else if (result.getWinnerPlayer() == this)
+        return false;
+    } 
+    
+    private boolean isSurrenderOf(Move first, Move second)
+    {
+        if ((first == Move.Rock && second == Move.Scissor) ||
+                (first == Move.Scissor && second == Move.Paper) ||
+                (first == Move.Paper && second == Move.Rock))
         {
-            return result.getLoserMove();
+            return true;
         }
-        else
-        {
-            return result.getWinnerMove();
-        }
+        return false;
     }
 }
