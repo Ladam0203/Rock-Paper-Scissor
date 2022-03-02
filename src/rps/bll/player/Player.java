@@ -48,12 +48,14 @@ public class Player implements IPlayer {
      * @return Next move
      */
 
-    private int[][] matrix = new int[3][3];
+    private int[][] matrix;
     private Random rnd = new Random();
     @Override
     public Move doMove(IGameState state) {
         //Historic data to analyze and decide next move...
         ArrayList<Result> results = (ArrayList<Result>) state.getHistoricResults();
+        int depth = 7;
+        List<Result> recent = results.subList(Math.max(results.size() - depth-1, 0), results.size());
 
         if (results.size() < 2)
         {
@@ -61,22 +63,25 @@ public class Player implements IPlayer {
         }
         else
         {
-            Move earlier = getHumanMove(results.get(results.size()-1));
-            Move latter = getHumanMove(results.get(results.size()-2));
+            matrix = new int[3][3];
+            for (int i = 1; i < recent.size(); i++) {
+                Move earlier = getHumanMove(recent.get(i));
+                Move latter = getHumanMove(recent.get(i-1));
 
-            matrix[moveToInt(earlier)][moveToInt(latter)] += 1;
+                matrix[moveToInt(earlier)][moveToInt(latter)] += 1;
+            }
 
+            Move latest = getHumanMove(recent.get(recent.size()-1));
             int max = 0;
             int nextIndex = 0;
             for (int i = 0; i < 3; i++) {
-                if (matrix[moveToInt(latter)][i] > max)
+                if (matrix[moveToInt(latest)][i] > max)
                 {
-                    max = matrix[moveToInt(latter)][i];
+                    max = matrix[moveToInt(latest)][i];
                     nextIndex = i;
                 }
             }
             displayMatrix();
-            System.out.println("prev:" + earlier.name());
             System.out.println("expected:" + intToMove(nextIndex).name());
             return losesTo(intToMove(nextIndex));
         }
