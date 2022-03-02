@@ -75,7 +75,9 @@ public class Player implements IPlayer {
                     nextIndex = i;
                 }
             }
-
+            displayMatrix();
+            System.out.println("prev:" + earlier.name());
+            System.out.println("expected:" + intToMove(nextIndex).name());
             return losesTo(intToMove(nextIndex));
         }
     }
@@ -124,6 +126,16 @@ public class Player implements IPlayer {
         }
         else {
             return 2;
+        }
+    }
+
+    public void displayMatrix()
+    {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.print(matrix[i][j] + " ");
+            }
+            System.out.println();
         }
     }
 
