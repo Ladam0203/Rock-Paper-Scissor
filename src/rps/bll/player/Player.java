@@ -9,6 +9,7 @@ import rps.bll.game.ResultType;
 //Java imports
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Example implementation of a player.
@@ -46,81 +47,64 @@ public class Player implements IPlayer {
      * @param state Contains the current game state including historic moves/results
      * @return Next move
      */
+
+    private int[][] matrix = new int[3][3];
+    private Random rnd = new Random();
     @Override
     public Move doMove(IGameState state) {
         //Historic data to analyze and decide next move...
         ArrayList<Result> results = (ArrayList<Result>) state.getHistoricResults();
 
-        int learnSize = 6;
-        List<Result> recent = results.subList(Math.max(results.size() - learnSize, 0), results.size());
-        double repeatLast = 0;
-        double counterLast = 0;
-        double surrenderLast = 0;
-        for (int i = 1; i < recent.size(); i++) {
-            if (recent.get(i-1).getWinnerMove() == recent.get(i).getWinnerMove())
-            {
-                repeatLast++;
-            }
-            else if ((recent.get(i-1).getWinnerMove() == Move.Rock && recent.get(i).getWinnerMove() == Move.Scissor) ||
-                    (recent.get(i-1).getWinnerMove() == Move.Scissor && recent.get(i).getWinnerMove() == Move.Paper) ||
-                    (recent.get(i-1).getWinnerMove() == Move.Paper && recent.get(i).getWinnerMove() == Move.Rock))
-            {
-                counterLast++;
-            }
-            else
-            {
-                surrenderLast++;
-            }
-        }
-        System.out.println(repeatLast + " " + counterLast + " " + surrenderLast);
-
-        if (recent.size() < 1)
+        if (results.size() < 2)
         {
-            return Move.Scissor;
+            return getRandomMove();
         }
         else
         {
-            Move repeatMove = recent.get(recent.size()-1).getWinnerMove();
-            Move counterMove = Move.Rock;
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Rock)
-            {
-                counterMove = Move.Paper;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Paper)
-            {
-                counterMove = Move.Scissor;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Scissor)
-            {
-                counterMove = Move.Rock;
-            }
-            Move surrenderMove = Move.Rock;
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Rock)
-            {
-                surrenderMove = Move.Scissor;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Paper)
-            {
-                surrenderMove = Move.Rock;
-            }
-            if (recent.get(recent.size()-1).getWinnerMove() == Move.Scissor)
-            {
-                surrenderMove = Move.Paper;
+            Move earlier = getHumanMove(results.get(results.size()-1));
+            Move latter = getHumanMove(results.get(results.size()-2));
+
+            matrix[moveToInt(earlier)][moveToInt(latter)] += 1;
+
+            int max = 0;
+            int nextIndex = 0;
+            for (int i = 0; i < 3; i++) {
+                if (matrix[moveToInt(latter)][i] > max)
+                {
+                    max = matrix[moveToInt(latter)][i];
+                    nextIndex = i;
+                }
             }
 
-            return repeatLast > counterLast ? repeatMove : counterLast > surrenderLast ? counterMove : surrenderMove;
+            return losesTo(intToMove(nextIndex));
         }
     }
 
     //HELPER CLASSES
 
-    public Move getBotMoveFromResult(Result result)
+    private Move losesTo(Move faces)
     {
-        if (result.getType() == ResultType.Tie)
+        if (faces == Move.Rock)
         {
-            return result.getLoserMove();
+            return Move.Paper;
         }
-        else if (result.getWinnerPlayer() == this)
+        else if (faces == Move.Paper)
+        {
+            return Move.Scissor;
+        }
+        else
+        {
+            return Move.Rock;
+        }
+    }
+
+    private Move getRandomMove() {
+        return intToMove(rnd.nextInt(0,3));
+    }
+
+    private Move getHumanMove(Result result)
+    {
+        if (result.getWinnerPlayer() != this)
         {
             return result.getWinnerMove();
         }
@@ -130,19 +114,29 @@ public class Player implements IPlayer {
         }
     }
 
-    public Move getHumanMoveFromResult(Result result)
+    private int moveToInt(Move move)
     {
-        if (result.getType() == ResultType.Tie)
-        {
-            return result.getWinnerMove();
+        if (move == Move.Rock) {
+            return 0;
         }
-        else if (result.getWinnerPlayer() == this)
-        {
-            return result.getLoserMove();
+        else if (move == Move.Paper) {
+            return 1;
         }
-        else
-        {
-            return result.getWinnerMove();
+        else {
+            return 2;
+        }
+    }
+
+    private Move intToMove(int number)
+    {
+        if (number == 0) {
+            return Move.Rock;
+        }
+        else if (number == 1) {
+            return Move.Paper;
+        }
+        else {
+            return Move.Scissor;
         }
     }
 }
