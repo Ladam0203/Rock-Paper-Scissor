@@ -65,13 +65,16 @@ public class Player implements IPlayer {
         {
             matrix = new int[3][3];
             for (int i = 1; i < recent.size(); i++) {
-                Move earlier = getHumanMove(recent.get(i));
-                Move latter = getHumanMove(recent.get(i-1));
+                Move earlier = getHumanMove(recent.get(i-1));
+                Move latter = getHumanMove(recent.get(i));
 
                 matrix[moveToInt(earlier)][moveToInt(latter)] += 1;
             }
 
             Move latest = getHumanMove(recent.get(recent.size()-1));
+
+            System.out.println("last move:" + latest.name());
+
             int max = 0;
             int nextIndex = 0;
             for (int i = 0; i < 3; i++) {
@@ -81,8 +84,10 @@ public class Player implements IPlayer {
                     nextIndex = i;
                 }
             }
+
             displayMatrix();
             System.out.println("expected:" + intToMove(nextIndex).name());
+
             return losesTo(intToMove(nextIndex));
         }
     }
