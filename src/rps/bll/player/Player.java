@@ -85,9 +85,15 @@ public class Player implements IPlayer {
                 }
             }
 
+
             displayMatrix();
             System.out.println("expected:" + intToMove(nextIndex).name());
 
+            //to avoid always playing rock agents unknown
+            if (max == 0)
+            {
+                return getRandomMove();
+            }
             return losesTo(intToMove(nextIndex));
         }
     }
